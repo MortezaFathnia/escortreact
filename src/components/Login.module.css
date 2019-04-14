@@ -1,0 +1,26 @@
+.loginContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #292e42;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+.loginContainer form input {
+  color:white!important;
+  border: none;
+  margin-bottom: 0.5rem;
+}
+.loginContainer form input[type='text'] {
+  background-color: #444f63;
+  text-align: center;
+}
+.loginContainer form input[type='submit'] {
+  background-color: #2e5bff;
+}
+.loginBg {
+  background: url('../assets/img/Login_bg@2x.png');
+  position: absolute;
+  bottom: 0;
+}

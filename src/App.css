@@ -1,0 +1,7 @@
+.leaflet-container  {
+  height: 100vh;
+  width: 100%;
+}
+a[href="http://leafletjs.com"]{
+  display: none;
+}
