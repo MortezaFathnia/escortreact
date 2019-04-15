@@ -1,0 +1,48 @@
+.bottomBarContainer {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.driverTitle {
+  border-bottom: 1px solid #eee;
+}
+.bottomBar {
+  background: #292e42;
+  z-index: 50000;
+  color: white;
+  padding: 1em 3em;
+  width: 600px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+.profilePhoto {
+  width: 70px;
+  height: 70px;
+  border-radius: 15px;
+  float: right;
+}
+.carNumber {
+  border: 1px solid #454f63;
+  padding: 5px;
+  border-radius: 10px;
+  float: left;
+}
+.driverName {
+  white-space: nowrap;
+}
+.carName {
+  white-space: nowrap;
+}
+.title {
+  float: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 9px;
+}

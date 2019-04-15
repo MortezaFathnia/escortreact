@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
+import BottomBar from '../layout/ButtomBar';
+import Request from './Request';
+import Wait from './Wait';
 
 class User extends Component {
   constructor() {
@@ -25,6 +28,8 @@ class User extends Component {
             </Popup>
           </Marker>
         </Map>
+        <BottomBar>
+        </BottomBar>
         </div>
       );
     
