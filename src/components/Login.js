@@ -28,7 +28,7 @@ class Login extends Component {
   render() {
     const { mobile } = this.state;
     return (
-      <consumer>
+      <Consumer>
         {value => {
           const { dispatch } = value;
           return (
@@ -52,7 +52,7 @@ class Login extends Component {
             </div>
           );
         }}
-      </consumer>
+      </Consumer>
     );
   }
 }
