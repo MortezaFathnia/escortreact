@@ -54,6 +54,10 @@ export const pin = new L.Icon({
 // }
 
 class User extends Component {
+  constructor(props) {
+    super(props);
+    // $FlowFixMe: ref
+  }
   state = {
     center: {
       lat: 36.31184,
@@ -63,25 +67,26 @@ class User extends Component {
       lat: 36.311842,
       lng: 59.56454
     },
-    setSource: false,
     markerDestination: {
       lat: 36.311842,
       lng: 59.56454
     },
     zoom: 13,
-    draggable: true,
+    draggablesource: true,
     draggabledestination: true
   };
-  // $FlowFixMe: ref
   refmarker = createRef();
-
+  refdistmarker = createRef();
   toggleDraggable = () => {
     const marker = this.refmarker.current;
-    this.setState({ draggable: !this.state.draggable });
+    this.setState({ draggablesource: !this.state.draggablesource });
     marker.leafletElement.setIcon(pin);
+    this.setState({
+      markerSource: marker.leafletElement.getLatLng()
+    });
   };
 
-  updatePosition = () => {
+  updatePosition = type => {
     const marker = this.refmarker.current;
     if (marker != null) {
       this.setState({
@@ -102,8 +107,8 @@ class User extends Component {
         <Map center={position} zoom={this.state.zoom}>
           <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
           <Marker
-            draggable={this.state.draggable}
-            onDragend={this.updatePosition.bind(this)}
+            draggable={this.state.draggablesource}
+            onDragend={this.updatePosition.bind(this, type)}
             position={markerSourcePosition}
             ref={this.refmarker}
           >
@@ -113,12 +118,12 @@ class User extends Component {
               </span>
             </Popup>
           </Marker>
-          {/* {this.state.setSource ? (
+          {!this.state.draggablesource ? (
             <Marker
               draggable={this.state.draggabledestination}
-              onDragend={this.updatePosition}
+              onDragend={this.updatePosition(this, type)}
               position={markerSourcePosition}
-              ref={this.refmarker}
+              ref={this.refdistmarker}
             >
               <Popup minWidth={90}>
                 <span onClick={this.toggleDraggable}>
@@ -126,9 +131,13 @@ class User extends Component {
                 </span>
               </Popup>
             </Marker>
-          ) : null} */}
+          ) : null}
         </Map>
-        <BottomBar submitSource={this.toggleDraggable.bind(this)} />
+        <BottomBar
+          submitSource={this.toggleDraggable.bind(this)}
+          setsrc={!this.state.draggablesource}
+          setPlace={false}
+        />
       </div>
     );
   }
