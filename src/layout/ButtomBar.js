@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 import classes from './ButtomBar.module.css';
+import { Consumer } from '../context';
 
 import profilePhoto from '../assets/img/profile.jpeg';
 class ButtomBar extends Component {
+  onSubmit = async (dispatch, e) => {
+    e.preventDefault();
+    this.props.submitSource();
+  };
+
   render() {
     const title = {
       borderBottom: '1px solid #454f63'
@@ -15,20 +21,30 @@ class ButtomBar extends Component {
       textAlign: 'right'
     };
     return (
-      <div className={classes.bottomBarContainer}>
-        <input
-          className="btn btn-block"
-          type="submit"
-          value="تایید مبدا"
-          style={{
-            zIndex: 50000,
-            color: 'white',
-            background: '#2e5bff',
-            width: '600px',
-            marginBottom: '3em'
-          }}
-        />
-      </div>
+      <Consumer>
+        {value => {
+          const { dispatch } = value;
+          return (
+            <form
+              className={classes.bottomBarContainer}
+              onSubmit={this.onSubmit.bind(this, dispatch)}
+            >
+              <input
+                className="btn btn-block"
+                type="submit"
+                value="تایید مبدا"
+                style={{
+                  zIndex: 50000,
+                  color: 'white',
+                  background: '#2e5bff',
+                  width: '600px',
+                  marginBottom: '3em'
+                }}
+              />
+            </form>
+          );
+        }}
+      </Consumer>
       // <div className={classes.bottomBarContainer}>
       //   <div className={classes.bottomBar}>
       //     <div className="row" style={title}>

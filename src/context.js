@@ -14,6 +14,12 @@ const reducer = (state, action) => {
         ...state,
         authenticated: action.payload
       };
+    case 'SOURCE':
+      return {
+        ...state,
+        sorceLng: action.payload.Lng,
+        sorceLat: action.payload.Lat
+      };
     default:
       return state;
   }
