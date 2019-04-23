@@ -54,10 +54,6 @@ export const pin = new L.Icon({
 // }
 
 class User extends Component {
-  constructor(props) {
-    super(props);
-    // $FlowFixMe: ref
-  }
   state = {
     center: {
       lat: 36.31184,
@@ -71,6 +67,8 @@ class User extends Component {
       lat: 36.311842,
       lng: 59.56454
     },
+    srcfixed: false,
+    distfixed: false,
     zoom: 13,
     draggablesource: true,
     draggabledestination: true
@@ -79,18 +77,34 @@ class User extends Component {
   refdistmarker = createRef();
   toggleDraggable = () => {
     const marker = this.refmarker.current;
-    this.setState({ draggablesource: !this.state.draggablesource });
-    marker.leafletElement.setIcon(pin);
-    this.setState({
-      markerSource: marker.leafletElement.getLatLng()
-    });
+    const distmarker = this.refdistmarker.current;
+    if (marker != null && !this.state.srcfixed) {
+      this.setState({
+        draggablesource: !this.state.draggablesource,
+        srcfixed: !this.state.setsrc
+      });
+      marker.leafletElement.setIcon(pin);
+    }
+    if (distmarker != null && !this.state.distfixed) {
+      this.setState({
+        draggabledestination: !this.state.draggabledestination,
+        distfixed: !this.state.setdist
+      });
+      distmarker.leafletElement.setIcon(pin);
+    }
   };
 
   updatePosition = type => {
     const marker = this.refmarker.current;
-    if (marker != null) {
+    const distmarker = this.refdistmarker.current;
+
+    if (marker != null && type === 'src') {
       this.setState({
         markerSource: marker.leafletElement.getLatLng()
+      });
+    } else if (distmarker != null && type === 'dist') {
+      this.setState({
+        markerDestination: distmarker.leafletElement.getLatLng()
       });
     }
   };
@@ -102,13 +116,19 @@ class User extends Component {
       this.state.markerSource.lng
     ];
 
+    const markerDistinationPosition = [
+      this.state.markerDestination.lat,
+      this.state.markerDestination.lng
+    ];
+
     return (
       <div>
         <Map center={position} zoom={this.state.zoom}>
           <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
           <Marker
+            id="src"
             draggable={this.state.draggablesource}
-            onDragend={this.updatePosition.bind(this, type)}
+            onDragend={this.updatePosition.bind(this, 'src')}
             position={markerSourcePosition}
             ref={this.refmarker}
           >
@@ -118,15 +138,16 @@ class User extends Component {
               </span>
             </Popup>
           </Marker>
-          {!this.state.draggablesource ? (
+          {this.state.srcfixed ? (
             <Marker
+              id="dist"
               draggable={this.state.draggabledestination}
-              onDragend={this.updatePosition(this, type)}
-              position={markerSourcePosition}
+              onDragend={this.updatePosition.bind(this, 'dist')}
+              position={markerDistinationPosition}
               ref={this.refdistmarker}
             >
               <Popup minWidth={90}>
-                <span onClick={this.toggleDraggable}>
+                <span onClick={this.toggleDraggable.bind(this)}>
                   {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
                 </span>
               </Popup>
@@ -135,7 +156,7 @@ class User extends Component {
         </Map>
         <BottomBar
           submitSource={this.toggleDraggable.bind(this)}
-          setsrc={!this.state.draggablesource}
+          setsrc={this.state.srcfixed}
           setPlace={false}
         />
       </div>
