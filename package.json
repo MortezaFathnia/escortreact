@@ -7,12 +7,14 @@
     "bootstrap": "^4.3.1",
     "leaflet": "^1.4.0",
     "prop-types": "^15.7.2",
+    "rc-slider": "^8.6.9",
     "react": "^16.8.6",
     "react-cookie": "^3.1.2",
     "react-dom": "^16.8.6",
     "react-leaflet": "^2.2.1",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8"
+    "react-scripts": "^3.0.0",
+    "react-toggle-button": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

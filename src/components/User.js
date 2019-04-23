@@ -25,34 +25,6 @@ export const pin = new L.Icon({
   shadowAnchor: [7, 40]
 });
 
-// class User extends Component {
-//   state = {
-//     lat: 36.311842,
-//     lng: 59.56454,
-//     zoom: 13
-//   };
-
-//   render() {
-//     const position = [this.state.lat, this.state.lng];
-//     const position2 = [36.3187, 59.56458];
-//     return (
-//       <Map center={position} zoom={this.state.zoom}>
-//         <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
-//         <Marker position={position} icon={pointerIcon}>
-//           <Popup>
-//             A pretty CSS3 popup. <br /> Easily customizable.
-//           </Popup>
-//         </Marker>
-//         <Marker position={position2} icon={suitcasePoint}>
-//           <Popup>
-//             A pretty CSS3 popup. <br /> Easily customizable.
-//           </Popup>
-//         </Marker>
-//       </Map>
-//     );
-//   }
-// }
-
 class User extends Component {
   state = {
     center: {
