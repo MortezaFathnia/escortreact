@@ -5,10 +5,10 @@ import Arrow from '../assets/img/arrow';
 import profilePhoto from '../assets/img/profile.jpeg';
 import ToggleButton from 'react-toggle-button';
 import Slider, { Range } from 'rc-slider';
-// We can just import Slider or Range to reduce bundle size
-// import Slider from 'rc-slider/lib/Slider';
-// import Range from 'rc-slider/lib/Range';
 import 'rc-slider/assets/index.css';
+import WomenCar from '../assets/img/womenCar';
+import ClassicCar from '../assets/img/classicCar';
+import LuxCar from '../assets/img/LuxCar';
 
 class ButtomBar extends Component {
   state = {
@@ -168,9 +168,15 @@ class ButtomBar extends Component {
               </div>
             </div>
             <div className="row">
-              <button />
-              <button />
-              <button />
+              <button>
+                <WomenCar />
+              </button>
+              <button>
+                <ClassicCar />
+              </button>
+              <button>
+                <LuxCar />
+              </button>
             </div>
             <input
               style={submit}
