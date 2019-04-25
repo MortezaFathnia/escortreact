@@ -43,7 +43,9 @@ class User extends Component {
     distfixed: false,
     zoom: 13,
     draggablesource: true,
-    draggabledestination: true
+    draggabledestination: true,
+    placesfixed:false,
+    sendrequest:false
   };
   refmarker = createRef();
   refdistmarker = createRef();
@@ -60,7 +62,8 @@ class User extends Component {
     if (distmarker != null && !this.state.distfixed) {
       this.setState({
         draggabledestination: !this.state.draggabledestination,
-        distfixed: !this.state.setdist
+        distfixed: !this.state.setdist,
+        placesfixed:!this.state.placesfixed
       });
       distmarker.leafletElement.setIcon(pin);
     }
@@ -80,6 +83,8 @@ class User extends Component {
       });
     }
   };
+
+  travelRequest
 
   render() {
     const position = [this.state.center.lat, this.state.center.lng];
@@ -129,7 +134,9 @@ class User extends Component {
         <BottomBar
           submitSource={this.toggleDraggable.bind(this)}
           setsrc={this.state.srcfixed}
-          setPlace={false}
+          placesfixed={this.state.placesfixed}
+          travelRequest={}
+          sendrequest={false}
         />
       </div>
     );

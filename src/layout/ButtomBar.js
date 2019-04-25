@@ -4,11 +4,25 @@ import { Consumer } from '../context';
 import Arrow from '../assets/img/arrow';
 import profilePhoto from '../assets/img/profile.jpeg';
 import ToggleButton from 'react-toggle-button';
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import WomenCar from '../assets/img/womenCar';
 import ClassicCar from '../assets/img/classicCar';
 import LuxCar from '../assets/img/LuxCar';
+
+const marks = {
+  10:<strong>1000</strong>,
+  20: '2000',
+  30: '3000',
+  40:'4000',
+  50:'5000',
+  60: {
+    style: {
+      color: '#fff',
+    },
+    label: <strong>6000</strong>,
+  },
+};
 
 class ButtomBar extends Component {
   state = {
@@ -18,7 +32,13 @@ class ButtomBar extends Component {
     e.preventDefault();
     this.props.submitSource();
   };
-
+  sendRequest=async e => {
+    e.preventDefault();
+    this.props.travelRequest();
+  };
+  log=(value)=> {
+    console.log(value); //eslint-disable-line
+  }
   render() {
     const title = {
       borderBottom: '1px solid #454f63'
@@ -110,9 +130,9 @@ class ButtomBar extends Component {
             }}
           />
         </form>
-        <div className={classes.bottomBarContainer}>
+        {this.props.placesfixed ? <form  onSubmit={this.sendRequest.bind(this)} className={classes.bottomBarContainer}>
           <div className={classes.bottomBar}>
-            <div className="row" style={title}>
+            <div className="row">
               <div className="col-md-6">
                 <div className={classes.title}>
                   <p className={classes.driverName}>ساعت اوج</p>
@@ -159,7 +179,9 @@ class ButtomBar extends Component {
                 />
               </div>
               <div className="col-md-6">
-                <Slider />
+            
+              <Slider dots min={10} marks={marks} step={10} onChange={this.log} defaultValue={10} max={60} />
+   
               </div>
             </div>
             <div className="row">
@@ -167,27 +189,36 @@ class ButtomBar extends Component {
                 <p>نوع سرویس را انتخاب کنید:</p>
               </div>
             </div>
-            <div className="row">
-              <button>
-                <WomenCar />
-              </button>
-              <button>
-                <ClassicCar />
-              </button>
-              <button>
-                <LuxCar />
-              </button>
+            <div className="row" style={{display:"flex",justifyContent:"space-around"}}>
+            <input className={classes.serviceInput} type="radio" name="type" id="classic" style={{margin:"0 0 10px 20px",display:"none"}}/>
+              <label className={classes.serviceType} for="classic" >
+                <ClassicCar  width="50" height="50"/>
+                کلاسیک
+                </label>  
+                <input className={classes.serviceInput} type="radio" name="type" id="lux" style={{margin:"0 0 10px 20px",display:"none"}}/>
+                <label className={classes.serviceType} for="lux">
+                <LuxCar  width="50" height="50" />
+                لوکس
+                </label>
+              <input className={classes.serviceInput} type="radio" name="type" id="women" style={{margin:"0 0 10px 20px",display:"none"}}/>
+              <label className={classes.serviceType} for="women">
+                <WomenCar width="50" height="50"/>
+                بانوان
+              </label>
+             
+               
             </div>
             <input
-              style={submit}
+              style={{color: 'white',background:'#2E5BFF'}}
               className="btn btn-block"
               type="submit"
               value="درخواست سفر"
             />
           </div>
-        </div>
-
-        {this.props.setplace ? (
+        </form>
+:''}
+       
+        {this.props.sendrequest ? (
           <div className={classes.bottomBarContainer}>
             <div className={classes.bottomBar}>
               <div className="row" style={title}>
