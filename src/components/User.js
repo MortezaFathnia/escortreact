@@ -2,6 +2,8 @@ import React, { Component, createRef } from 'react';
 import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 import BottomBar from '../layout/ButtomBar';
 import L from 'leaflet';
+import axios from 'axios';
+import { Consumer } from '../context';
 
 export const pointerIcon = new L.Icon({
   iconUrl: require('../assets/pointerIcon.svg'),
@@ -44,12 +46,13 @@ class User extends Component {
     zoom: 13,
     draggablesource: true,
     draggabledestination: true,
-    placesfixed:false,
-    sendrequest:false
+    placesfixed: false,
+    sendrequest: false
   };
   refmarker = createRef();
   refdistmarker = createRef();
-  toggleDraggable = () => {
+
+  toggleDraggable = async (dispatch, e) => {
     const marker = this.refmarker.current;
     const distmarker = this.refdistmarker.current;
     if (marker != null && !this.state.srcfixed) {
@@ -57,15 +60,51 @@ class User extends Component {
         draggablesource: !this.state.draggablesource,
         srcfixed: !this.state.setsrc
       });
-      marker.leafletElement.setIcon(pin);
+
+      const res = await axios.post(
+        `http://185.252.28.133/reverse.php?format=json&accept-language=fa&lat=${
+          this.state.markerSource.lat
+        }&lon=${this.state.markerSource.lng}`
+      );
+      if (res.status === 200) {
+        console.log(res.data.address);
+        dispatch({
+          type: 'SOURCE',
+          payload: {
+            lat: this.state.markerSource.lat,
+            lan: this.state.markerSource.lng,
+            address: res.data.address
+          }
+        });
+        marker.leafletElement.setIcon(pin);
+      } else {
+        console.log(res.data.errorMassage);
+      }
     }
     if (distmarker != null && !this.state.distfixed) {
       this.setState({
         draggabledestination: !this.state.draggabledestination,
         distfixed: !this.state.setdist,
-        placesfixed:!this.state.placesfixed
+        placesfixed: !this.state.placesfixed
       });
-      distmarker.leafletElement.setIcon(pin);
+      const res = await axios.post(
+        `http://185.252.28.133/reverse.php?format=json&accept-language=fa&lat=${
+          this.state.markerDestination.lat
+        }&lon=${this.state.markerDestination.lng}`
+      );
+      if (res.status === 200) {
+        dispatch({
+          type: 'DISTINATION',
+          payload: {
+            lat: this.state.markerDestination.lat,
+            lan: this.state.markerDestination.lng,
+            address: res.data.address
+          }
+        });
+        distmarker.leafletElement.setIcon(pin);
+      } else {
+        console.log(res.data.errorMassage);
+      }
     }
   };
 
@@ -84,7 +123,7 @@ class User extends Component {
     }
   };
 
-  travelRequest
+  travelRequest = type => {};
 
   render() {
     const position = [this.state.center.lat, this.state.center.lng];
@@ -99,46 +138,53 @@ class User extends Component {
     ];
 
     return (
-      <div>
-        <Map center={position} zoom={this.state.zoom}>
-          <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
-          <Marker
-            id="src"
-            draggable={this.state.draggablesource}
-            onDragend={this.updatePosition.bind(this, 'src')}
-            position={markerSourcePosition}
-            ref={this.refmarker}
-          >
-            <Popup minWidth={90}>
-              <span onClick={this.toggleDraggable.bind(this)}>
-                {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
-              </span>
-            </Popup>
-          </Marker>
-          {this.state.srcfixed ? (
-            <Marker
-              id="dist"
-              draggable={this.state.draggabledestination}
-              onDragend={this.updatePosition.bind(this, 'dist')}
-              position={markerDistinationPosition}
-              ref={this.refdistmarker}
-            >
-              <Popup minWidth={90}>
-                <span onClick={this.toggleDraggable.bind(this)}>
-                  {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
-                </span>
-              </Popup>
-            </Marker>
-          ) : null}
-        </Map>
-        <BottomBar
-          submitSource={this.toggleDraggable.bind(this)}
-          setsrc={this.state.srcfixed}
-          placesfixed={this.state.placesfixed}
-          travelRequest={}
-          sendrequest={false}
-        />
-      </div>
+      <Consumer>
+        {value => {
+          const { dispatch } = value;
+          return (
+            <div>
+              <Map center={position} zoom={this.state.zoom}>
+                <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
+                <Marker
+                  id="src"
+                  draggable={this.state.draggablesource}
+                  onDragend={this.updatePosition.bind(this, 'src')}
+                  position={markerSourcePosition}
+                  ref={this.refmarker}
+                >
+                  <Popup minWidth={90}>
+                    <span onClick={this.toggleDraggable.bind(this, dispatch)}>
+                      {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
+                    </span>
+                  </Popup>
+                </Marker>
+                {this.state.srcfixed ? (
+                  <Marker
+                    id="dist"
+                    draggable={this.state.draggabledestination}
+                    onDragend={this.updatePosition.bind(this, 'dist')}
+                    position={markerDistinationPosition}
+                    ref={this.refdistmarker}
+                  >
+                    <Popup minWidth={90}>
+                      <span onClick={this.toggleDraggable.bind(this, dispatch)}>
+                        {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
+                      </span>
+                    </Popup>
+                  </Marker>
+                ) : null}
+              </Map>
+              <BottomBar
+                submitSource={this.toggleDraggable.bind(this, dispatch)}
+                setsrc={this.state.srcfixed}
+                placesfixed={this.state.placesfixed}
+                travelRequest={this.travelRequest.bind(this)}
+                sendrequest={false}
+              />
+            </div>
+          );
+        }}
+      </Consumer>
     );
   }
 }

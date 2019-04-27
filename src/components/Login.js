@@ -11,7 +11,6 @@ class Login extends Component {
 
   onSubmit = async (dispatch, e) => {
     e.preventDefault();
-
     const { mobile } = this.state;
 
     const res = await axios.post('http://185.252.28.132:8069/api/Rigester', {
