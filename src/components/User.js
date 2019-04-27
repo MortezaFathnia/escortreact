@@ -4,6 +4,7 @@ import BottomBar from '../layout/ButtomBar';
 import L from 'leaflet';
 import axios from 'axios';
 import { Consumer } from '../context';
+import Cookies from 'universal-cookie';
 
 export const pointerIcon = new L.Icon({
   iconUrl: require('../assets/pointerIcon.svg'),
@@ -37,6 +38,7 @@ class User extends Component {
       lat: 36.311842,
       lng: 59.56454
     },
+    sourceAddress: {},
     markerDestination: {
       lat: 36.311842,
       lng: 59.56454
@@ -44,6 +46,7 @@ class User extends Component {
     srcfixed: false,
     distfixed: false,
     zoom: 13,
+    cost: '',
     draggablesource: true,
     draggabledestination: true,
     placesfixed: false,
@@ -52,66 +55,102 @@ class User extends Component {
   refmarker = createRef();
   refdistmarker = createRef();
 
-  toggleDraggable = async (dispatch, e) => {
+  toggleDraggable = async (dispatch, value, e) => {
     const marker = this.refmarker.current;
     const distmarker = this.refdistmarker.current;
-    if (marker != null && !this.state.srcfixed) {
-      this.setState({
-        draggablesource: !this.state.draggablesource,
-        srcfixed: !this.state.setsrc
-      });
 
-      const res = await axios.post(
+    if (marker != null && !this.state.srcfixed) {
+      const ressrc = await axios.post(
         `http://185.252.28.133/reverse.php?format=json&accept-language=fa&lat=${
           this.state.markerSource.lat
         }&lon=${this.state.markerSource.lng}`
       );
-      if (res.status === 200) {
-        console.log(res.data.address);
+      if (ressrc.status === 200) {
+        const src = {
+          lat: this.state.markerSource.lat,
+          lan: this.state.markerSource.lng,
+          address: ressrc.data.address.city + ' , ' + ressrc.data.address.road
+        };
         dispatch({
           type: 'SOURCE',
-          payload: {
-            lat: this.state.markerSource.lat,
-            lan: this.state.markerSource.lng,
-            address: res.data.address
-          }
+          payload: src
+        });
+        this.setState({
+          draggablesource: !this.state.draggablesource,
+          srcfixed: !this.state.setsrc,
+          sourceAddress: src.address
         });
         marker.leafletElement.setIcon(pin);
       } else {
-        console.log(res.data.errorMassage);
+        console.log(ressrc.data.errorMassage);
       }
     }
     if (distmarker != null && !this.state.distfixed) {
       this.setState({
         draggabledestination: !this.state.draggabledestination,
-        distfixed: !this.state.setdist,
-        placesfixed: !this.state.placesfixed
+        distfixed: !this.state.setdist
       });
-      const res = await axios.post(
+      const resdist = await axios.post(
         `http://185.252.28.133/reverse.php?format=json&accept-language=fa&lat=${
           this.state.markerDestination.lat
         }&lon=${this.state.markerDestination.lng}`
       );
-      if (res.status === 200) {
-        dispatch({
-          type: 'DISTINATION',
-          payload: {
-            lat: this.state.markerDestination.lat,
-            lan: this.state.markerDestination.lng,
-            address: res.data.address
+      if (resdist.status === 200) {
+        const cookies = new Cookies();
+        const distroad = resdist.data.neighbourhood
+          ? resdist.data.neighbourhood
+          : resdist.data.address.road;
+        const distinations = [
+          {
+            Lat: this.state.markerDestination.lat,
+            Lng: this.state.markerDestination.lng,
+            address: resdist.data.address.city + ' , ' + distroad
           }
-        });
-        distmarker.leafletElement.setIcon(pin);
+        ];
+        const resCost = await axios.post(
+          'http://185.252.28.132:8069/api/CostCalculat',
+          {
+            customerId: cookies.get('userId'),
+            sorceLng: this.state.markerSource.lng,
+            sorceLat: this.state.markerSource.lat,
+            sorceAddress: this.state.sourceAddress,
+            tripStopTime: '',
+            Destinations: distinations,
+            promoCode: ''
+          },
+          {
+            headers: {
+              token: cookies.get('token')
+            }
+          }
+        );
+        if (resCost.status === 200) {
+          dispatch({
+            type: 'DISTINATION',
+            payload: distinations
+          });
+          this.setState({
+            placesfixed: !this.state.placesfixed,
+            cost: resCost.data
+          });
+          console.log(resCost.data);
+          distmarker.leafletElement.setIcon(pin);
+        } else {
+          console.log(resCost.data.errorMassage);
+        }
       } else {
-        console.log(res.data.errorMassage);
+        console.log(resdist.data.errorMassage);
       }
     }
+  };
+
+  costCalculate = async value => {
+    console.log(value);
   };
 
   updatePosition = type => {
     const marker = this.refmarker.current;
     const distmarker = this.refdistmarker.current;
-
     if (marker != null && type === 'src') {
       this.setState({
         markerSource: marker.leafletElement.getLatLng()
@@ -123,7 +162,7 @@ class User extends Component {
     }
   };
 
-  travelRequest = type => {};
+  travelRequest = async e => {};
 
   render() {
     const position = [this.state.center.lat, this.state.center.lng];
@@ -153,7 +192,9 @@ class User extends Component {
                   ref={this.refmarker}
                 >
                   <Popup minWidth={90}>
-                    <span onClick={this.toggleDraggable.bind(this, dispatch)}>
+                    <span
+                      onClick={this.toggleDraggable.bind(this, dispatch, value)}
+                    >
                       {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
                     </span>
                   </Popup>
@@ -167,7 +208,13 @@ class User extends Component {
                     ref={this.refdistmarker}
                   >
                     <Popup minWidth={90}>
-                      <span onClick={this.toggleDraggable.bind(this, dispatch)}>
+                      <span
+                        onClick={this.toggleDraggable.bind(
+                          this,
+                          dispatch,
+                          value
+                        )}
+                      >
                         {this.state.draggable ? 'DRAG MARKER' : 'MARKER FIXED'}
                       </span>
                     </Popup>
@@ -175,9 +222,10 @@ class User extends Component {
                 ) : null}
               </Map>
               <BottomBar
-                submitSource={this.toggleDraggable.bind(this, dispatch)}
+                submitSource={this.toggleDraggable.bind(this, dispatch, value)}
                 setsrc={this.state.srcfixed}
                 placesfixed={this.state.placesfixed}
+                cost={this.state.cost}
                 travelRequest={this.travelRequest.bind(this)}
                 sendrequest={false}
               />

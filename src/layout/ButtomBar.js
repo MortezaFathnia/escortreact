@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import classes from './ButtomBar.module.css';
-import { Consumer } from '../context';
 import Arrow from '../assets/img/arrow';
 import profilePhoto from '../assets/img/profile.jpeg';
 import ToggleButton from 'react-toggle-button';
@@ -209,6 +208,7 @@ class ButtomBar extends Component {
                   name="type"
                   id="classic"
                   style={{ margin: '0 0 10px 20px', display: 'none' }}
+                  defaultChecked
                 />
                 <label className={classes.serviceType} htmlFor="classic">
                   <ClassicCar width="50" height="50" />
@@ -288,7 +288,7 @@ class ButtomBar extends Component {
                   <p>3500 تومان نقدی پرداخت کنید</p>
                 </div>
                 <div className="col-md-6">
-                  <a>پرداخت اعتباری</a>
+                  <a href="">پرداخت اعتباری</a>
                 </div>
               </div>
               <input

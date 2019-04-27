@@ -22,14 +22,7 @@ const reducer = (state, action) => {
       };
     case 'DISTINATION':
       return {
-        ...state,
-        Destinations: [
-          {
-            lat: action.payload.lat,
-            Lng: action.payload.lan,
-            Address: action.payload.address
-          }
-        ]
+        destinations: [...state.destinations, action.payload.destinations]
       };
     default:
       return state;
@@ -44,7 +37,8 @@ export class Provider extends Component {
     sorceLng: '',
     sorceLat: '',
     sourceAddress: '',
-    Destinations: [
+    tripStopTime: '',
+    destinations: [
       {
         Lng: '',
         lat: '',

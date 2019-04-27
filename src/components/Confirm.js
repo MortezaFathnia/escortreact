@@ -43,6 +43,7 @@ class Confirm extends Component {
       dispatch({ type: 'CONFIRM', payload: true });
       const cookies = new Cookies();
       cookies.set('token', res.data.data.tokenApps[0].token, { path: '/' });
+      cookies.set('userId', res.data.data.userId, { path: '/' });
       this.props.history.push('/user');
     } else {
       console.log(res.data.errorMassage);
