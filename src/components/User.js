@@ -5,6 +5,7 @@ import L from 'leaflet';
 import axios from 'axios';
 import { Consumer } from '../context';
 import Cookies from 'universal-cookie';
+import TopBar from '../layout/TopBar';
 
 export const pointerIcon = new L.Icon({
   iconUrl: require('../assets/pointerIcon.svg'),
@@ -104,7 +105,7 @@ class User extends Component {
           {
             Lat: this.state.markerDestination.lat,
             Lng: this.state.markerDestination.lng,
-            address: resdist.data.address.city + ' , ' + distroad
+            Address: resdist.data.address.city + ' , ' + distroad
           }
         ];
         const resCost = await axios.post(
@@ -125,11 +126,11 @@ class User extends Component {
           }
         );
         if (resCost.status === 200) {
+          console.log(distinations);
           dispatch({
             type: 'DISTINATION',
             payload: distinations
           });
-          console.log('resCost', resCost);
           this.setState({
             placesfixed: !this.state.placesfixed,
             cost: resCost.data.data
@@ -181,7 +182,8 @@ class User extends Component {
         {value => {
           const { dispatch } = value;
           return (
-            <div>
+            <React.Fragment>
+              <TopBar />
               <Map center={position} zoom={this.state.zoom}>
                 <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
                 <Marker
@@ -229,7 +231,7 @@ class User extends Component {
                 travelRequest={this.travelRequest.bind(this)}
                 sendrequest={false}
               />
-            </div>
+            </React.Fragment>
           );
         }}
       </Consumer>

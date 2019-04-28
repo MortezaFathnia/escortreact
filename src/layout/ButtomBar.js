@@ -10,7 +10,7 @@ import ClassicCar from '../assets/img/classicCar';
 import LuxCar from '../assets/img/LuxCar';
 
 const marks = {
-  10: <strong>1000</strong>,
+  10: '1000',
   20: '2000',
   30: '3000',
   40: '4000',
@@ -26,6 +26,7 @@ const marks = {
 class ButtomBar extends Component {
   state = {
     immediateTravel: false,
+    addedcost: 1000,
     type: 0
   };
   onSubmit = async e => {
@@ -37,7 +38,12 @@ class ButtomBar extends Component {
     this.props.travelRequest();
   };
   log = value => {
-    console.log(value); //eslint-disable-line
+    //todo: check state
+    console.log(value, this.state.addedcost, (value / 10) * 1000);
+    this.setState({
+      addedcost: (value / 10) * 1000
+    });
+    console.log('addedCost', this.state.addedcost);
   };
   typeChange = e => {
     this.setState({
@@ -190,17 +196,21 @@ class ButtomBar extends Component {
                     }}
                   />
                 </div>
-                <div className="col-md-6">
-                  <Slider
-                    dots
-                    min={10}
-                    marks={marks}
-                    step={10}
-                    onChange={this.log}
-                    defaultValue={10}
-                    max={60}
-                  />
-                </div>
+                {this.state.immediateTravel ? (
+                  <div className="col-md-6">
+                    <Slider
+                      dots
+                      min={10}
+                      marks={marks}
+                      step={10}
+                      onChange={this.log}
+                      defaultValue={10}
+                      max={60}
+                    />
+                  </div>
+                ) : (
+                  ''
+                )}
               </div>
               <div className="row">
                 <div className="col-md-12" style={textRight}>

@@ -22,7 +22,8 @@ const reducer = (state, action) => {
       };
     case 'DISTINATION':
       return {
-        destinations: [...state.destinations, action.payload.destinations]
+        ...state,
+        destinations: action.payload
       };
     default:
       return state;
