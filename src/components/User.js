@@ -46,7 +46,7 @@ class User extends Component {
     srcfixed: false,
     distfixed: false,
     zoom: 13,
-    cost: '',
+    cost: {},
     draggablesource: true,
     draggabledestination: true,
     placesfixed: false,
@@ -114,7 +114,7 @@ class User extends Component {
             sorceLng: this.state.markerSource.lng,
             sorceLat: this.state.markerSource.lat,
             sorceAddress: this.state.sourceAddress,
-            tripStopTime: '',
+            tripStopTime: 0,
             Destinations: distinations,
             promoCode: ''
           },
@@ -129,11 +129,11 @@ class User extends Component {
             type: 'DISTINATION',
             payload: distinations
           });
+          console.log('resCost', resCost);
           this.setState({
             placesfixed: !this.state.placesfixed,
-            cost: resCost.data
+            cost: resCost.data.data
           });
-          console.log(resCost.data);
           distmarker.leafletElement.setIcon(pin);
         } else {
           console.log(resCost.data.errorMassage);

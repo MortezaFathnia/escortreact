@@ -38,6 +38,7 @@ export class Provider extends Component {
     sorceLat: '',
     sourceAddress: '',
     tripStopTime: '',
+    price: '',
     destinations: [
       {
         Lng: '',

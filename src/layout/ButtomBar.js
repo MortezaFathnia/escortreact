@@ -25,7 +25,8 @@ const marks = {
 
 class ButtomBar extends Component {
   state = {
-    immediateTravel: false
+    immediateTravel: false,
+    type: 0
   };
   onSubmit = async e => {
     e.preventDefault();
@@ -37,6 +38,11 @@ class ButtomBar extends Component {
   };
   log = value => {
     console.log(value); //eslint-disable-line
+  };
+  typeChange = e => {
+    this.setState({
+      type: e.currentTarget.value
+    });
   };
   render() {
     const title = {
@@ -110,6 +116,7 @@ class ButtomBar extends Component {
         marginBottom: -20
       }
     };
+
     return (
       <div>
         <form
@@ -143,9 +150,11 @@ class ButtomBar extends Component {
                 </div>
                 <div className="col-md-6">
                   <p className={classes.price}>
-                    <span style={{ marginLeft: '3px' }}>60000</span>
+                    <span style={{ marginLeft: '3px' }}>6000</span>
                     <Arrow width="30px" />
-                    <span style={{ marginRight: '3px' }}>35000</span>
+                    <span style={{ marginRight: '3px' }}>
+                      {this.props.cost.report[this.state.type].totalPrice}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -209,6 +218,8 @@ class ButtomBar extends Component {
                   id="classic"
                   style={{ margin: '0 0 10px 20px', display: 'none' }}
                   defaultChecked
+                  value="0"
+                  onChange={this.typeChange}
                 />
                 <label className={classes.serviceType} htmlFor="classic">
                   <ClassicCar width="50" height="50" />
@@ -220,6 +231,8 @@ class ButtomBar extends Component {
                   name="type"
                   id="lux"
                   style={{ margin: '0 0 10px 20px', display: 'none' }}
+                  value="2"
+                  onChange={this.typeChange}
                 />
                 <label className={classes.serviceType} htmlFor="lux">
                   <LuxCar width="50" height="50" />
@@ -231,6 +244,8 @@ class ButtomBar extends Component {
                   name="type"
                   id="women"
                   style={{ margin: '0 0 10px 20px', display: 'none' }}
+                  value="1"
+                  onChange={this.typeChange}
                 />
                 <label className={classes.serviceType} htmlFor="women">
                   <WomenCar width="50" height="50" />
