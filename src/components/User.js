@@ -126,14 +126,19 @@ class User extends Component {
           }
         );
         if (resCost.status === 200) {
-          console.log(distinations);
+          const rescostData = resCost.data.data;
           dispatch({
-            type: 'DISTINATION',
-            payload: distinations
+            type: 'COSTCACULATE',
+            payload: {
+              dist: distinations,
+              predictTime: rescostData.predictTime,
+              predictDist: rescostData.predictDistanc
+            }
           });
+
           this.setState({
             placesfixed: !this.state.placesfixed,
-            cost: resCost.data.data
+            cost: rescostData
           });
           distmarker.leafletElement.setIcon(pin);
         } else {
@@ -163,7 +168,27 @@ class User extends Component {
     }
   };
 
-  travelRequest = async e => {};
+  travelRequest = async (cost, report, e) => {
+    console.log(cost, report);
+    // const cookies = new Cookies();
+    // const resTravel = await axios.post(
+    //   'http://185.252.28.132:8069/api/TripRequestByCustomer',
+    //   {
+    //     customerId: cookies.get('userId'),
+    //     sorceLng: this.state.markerSource.lng,
+    //     sorceLat: this.state.markerSource.lat,
+    //     sorceAddress: this.state.sourceAddress,
+    //     tripStopTime: 0,
+    //     Destinations: distinations,
+    //     promoCode: ''
+    //   },
+    //   {
+    //     headers: {
+    //       token: cookies.get('token')
+    //     }
+    //   }
+    // );
+  };
 
   render() {
     const position = [this.state.center.lat, this.state.center.lng];
@@ -228,7 +253,6 @@ class User extends Component {
                 setsrc={this.state.srcfixed}
                 placesfixed={this.state.placesfixed}
                 cost={this.state.cost}
-                travelRequest={this.travelRequest.bind(this)}
                 sendrequest={false}
               />
             </React.Fragment>

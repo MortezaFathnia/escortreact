@@ -7,7 +7,6 @@ class TopBar extends Component {
     return (
       <Consumer>
         {value => {
-          console.log(value.destinations);
           return (
             <div className={classes.topBarContainer}>
               <input
@@ -17,7 +16,7 @@ class TopBar extends Component {
                 value={value.sourceAddress}
                 readOnly
               />
-              {value.destinations[0].Address ? (
+              {value.sourceAddress ? (
                 <input
                   className={classes.inputAddress}
                   type="text"

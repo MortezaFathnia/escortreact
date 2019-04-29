@@ -20,10 +20,16 @@ const reducer = (state, action) => {
         sorceLng: action.payload.lan,
         sourceAddress: action.payload.address
       };
-    case 'DISTINATION':
+    case 'COSTCACULATE':
       return {
-        ...state,
-        destinations: action.payload
+        destinations: action.payload.dist,
+        timeTrip: action.payload.predictTime,
+        predictDist: action.payload.predictDist
+      };
+    case 'TRAVELREQUEST':
+      return {
+        proposalPrice: action.payload.addedCost,
+        report: action.payload.report
       };
     default:
       return state;
@@ -39,6 +45,9 @@ export class Provider extends Component {
     sorceLat: '',
     sourceAddress: '',
     tripStopTime: '',
+    tripRequestId: '',
+    proposalPrice: '',
+    report: '',
     price: '',
     destinations: [
       {
