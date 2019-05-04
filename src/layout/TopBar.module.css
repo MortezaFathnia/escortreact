@@ -5,13 +5,23 @@
   width: 23%;
   z-index: 5000;
 }
-.inputAddress {
+.addressContainer {
+  position: relative;
+}
+.addressValue {
+  background: #fff;
   width: 100%;
-  float: right;
-  padding-right: 40px;
+  padding-right: 45px;
+  text-align: right;
   outline: none;
-  border: none;
   border-radius: 10px;
   line-height: 2.5;
-  background: #fff url(../assets/img/menu.svg) no-repeat 98% center;
+}
+.btnAddress {
+  position: absolute;
+  background: none;
+  border: none;
+  right: 0;
+  top: 7px;
+  z-index: 30;
 }

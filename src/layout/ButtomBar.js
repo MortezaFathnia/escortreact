@@ -29,7 +29,7 @@ const marks = {
 class ButtomBar extends Component {
   state = {
     immediateTravel: false,
-    addedcost: 10000,
+    addedcost: 0,
     type: 0
   };
   onSubmit = async e => {
@@ -38,46 +38,40 @@ class ButtomBar extends Component {
   };
   sendRequest = async (dispatch, value, e) => {
     e.preventDefault();
-    dispatch({
-      type: 'TRAVELREQUEST',
-      payload: {
-        addedCost: this.state.addedcost,
-        report: this.props.cost.report[this.state.type]
-      }
-    });
+    console.log(value);
     const cookies = new Cookies();
     const resTravel = await axios.post(
       'http://185.252.28.132:8069/api/TripRequestByCustomer',
       {
-        customerId: cookies.get('userId'),
+        customerId: Number(cookies.get('userId')),
         tripRequestId: '',
-        customerName: 'reza',
-        customerFamily: 'mohammadi',
-        mobile: '09372412136',
-        sorceLat: '36.359043',
-        sorceLng: '59.532021',
-        sorceAddress: 'مشهد , 28',
+        firstName: 'مرتضی',
+        lastName: 'فتح نیا',
+        mobile: '09156193976',
+        sorceLat: value.sorceLat,
+        sorceLng: value.sorceLng,
+        sorceAddress: value.sourceAddress,
         regionSrc: 0,
         regionDes: 0,
         oodOreven: 2,
-        destinationLat: '36.32789357024859',
-        destinationLng: '59.54399507492781',
-        destinationAddress: 'مشهد , بزرگراه آزادی',
-        tripTypeId: '2',
+        destinationLat: value.destinations[0].Lat,
+        destinationLng: value.destinations[0].Lng,
+        destinationAddress: value.destinations[0].Address,
+        tripTypeId: value.report.tripTypeID,
         traficFlag: 0,
-        timeTrip: 0,
+        timeTrip: value.timeTrip,
         specialPlaceFlag: 0,
         requestCount: 1,
         tripStopTime: 0,
         regionId: 0,
-        PredictTripDistanc: 0,
+        PredictTripDistanc: value.predictDist,
         PredictTripWatingDistanc: 0,
-        cost: 4000,
-        proposalPrice: 9500,
+        cost: value.report.totalPrice,
+        proposalPrice: this.state.addedcost,
         promoCode: '',
         discountval: 0,
         increesPrice: 0,
-        tripPriceId: 0,
+        tripPriceId: value.report.tripPriceId,
         payableVal: 0,
         grossRevenue: 0,
         otherDestination: []
@@ -88,16 +82,34 @@ class ButtomBar extends Component {
         }
       }
     );
-    console.log(resTravel);
+    console.log(resTravel.data);
+    dispatch({
+      type: 'TRAVELREQUEST',
+      payload: {
+        tripRequestId: resTravel.tripRequestId
+      }
+    });
   };
-  log = value => {
+  log = (dispatch, value) => {
     this.setState({
       addedcost: (value / 10) * 10000
     });
+    dispatch({
+      type: 'IMMADIATETRAVEL',
+      payload: {
+        addedCost: this.state.addedcost
+      }
+    });
   };
-  typeChange = e => {
+  typeChange = (dispatch, e) => {
     this.setState({
       type: e.currentTarget.value
+    });
+    dispatch({
+      type: 'CHANGETYPE',
+      payload: {
+        report: this.props.cost.report[this.state.type]
+      }
     });
   };
   render() {
@@ -214,10 +226,19 @@ class ButtomBar extends Component {
                             {this.props.cost.report[this.state.type]
                               .totalPrice + this.state.addedcost}
                           </span>
-                          <Arrow width="30px" />
-                          <span style={{ marginRight: '3px' }}>
-                            {this.props.cost.report[this.state.type].totalPrice}
-                          </span>
+                          {this.state.immediateTravel ? (
+                            <React.Fragment>
+                              <Arrow width="30px" fill="#fff" />
+                              <span style={{ marginRight: '3px' }}>
+                                {
+                                  this.props.cost.report[this.state.type]
+                                    .totalPrice
+                                }
+                              </span>
+                            </React.Fragment>
+                          ) : (
+                            ''
+                          )}
                         </p>
                       </div>
                     </div>
@@ -248,7 +269,8 @@ class ButtomBar extends Component {
                           value={this.state.immediateTravel}
                           onToggle={value => {
                             this.setState({
-                              immediateTravel: !this.state.immediateTravel
+                              immediateTravel: !this.state.immediateTravel,
+                              addedcost: 10000
                             });
                           }}
                         />
@@ -260,7 +282,7 @@ class ButtomBar extends Component {
                             min={10}
                             marks={marks}
                             step={10}
-                            onChange={this.log}
+                            onChange={this.log.bind(this, dispatch)}
                             defaultValue={10}
                             max={60}
                           />
@@ -289,7 +311,7 @@ class ButtomBar extends Component {
                         style={{ margin: '0 0 10px 20px', display: 'none' }}
                         defaultChecked
                         value="0"
-                        onChange={this.typeChange}
+                        onChange={this.typeChange.bind(this, dispatch)}
                       />
                       <label className={classes.serviceType} htmlFor="classic">
                         <ClassicCar width="50" height="50" />
@@ -302,7 +324,7 @@ class ButtomBar extends Component {
                         id="lux"
                         style={{ margin: '0 0 10px 20px', display: 'none' }}
                         value="2"
-                        onChange={this.typeChange}
+                        onChange={this.typeChange.bind(this, dispatch)}
                       />
                       <label className={classes.serviceType} htmlFor="lux">
                         <LuxCar width="50" height="50" />
@@ -315,7 +337,7 @@ class ButtomBar extends Component {
                         id="women"
                         style={{ margin: '0 0 10px 20px', display: 'none' }}
                         value="1"
-                        onChange={this.typeChange}
+                        onChange={this.typeChange.bind(this, dispatch)}
                       />
                       <label className={classes.serviceType} htmlFor="women">
                         <WomenCar width="50" height="50" />

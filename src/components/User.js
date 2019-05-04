@@ -39,11 +39,12 @@ class User extends Component {
       lat: 36.311842,
       lng: 59.56454
     },
-    sourceAddress: {},
+    sourceAddress: '',
     markerDestination: {
       lat: 36.311842,
       lng: 59.56454
     },
+    distinations: [],
     srcfixed: false,
     distfixed: false,
     zoom: 13,
@@ -57,6 +58,7 @@ class User extends Component {
   refdistmarker = createRef();
 
   toggleDraggable = async (dispatch, value, e) => {
+    console.log(333);
     const marker = this.refmarker.current;
     const distmarker = this.refdistmarker.current;
 
@@ -132,7 +134,8 @@ class User extends Component {
             payload: {
               dist: distinations,
               predictTime: rescostData.predictTime,
-              predictDist: rescostData.predictDistanc
+              predictDist: rescostData.predictDistanc,
+              report: rescostData.report[0]
             }
           });
 
@@ -154,16 +157,31 @@ class User extends Component {
     console.log(value);
   };
 
-  updatePosition = type => {
+  updatePosition = async type => {
     const marker = this.refmarker.current;
     const distmarker = this.refdistmarker.current;
     if (marker != null && type === 'src') {
+      const resSrc = await axios.post(
+        `http://185.252.28.133/reverse.php?format=json&accept-language=fa&lat=${
+          this.state.markerSource.lat
+        }&lon=${this.state.markerSource.lng}`
+      );
       this.setState({
-        markerSource: marker.leafletElement.getLatLng()
+        markerSource: marker.leafletElement.getLatLng(),
+        sourceAddress:
+          resSrc.data.address.city + ' , ' + resSrc.data.address.road
       });
     } else if (distmarker != null && type === 'dist') {
+      const resDist = await axios.post(
+        `http://185.252.28.133/reverse.php?format=json&accept-language=fa&lat=${
+          this.state.markerSource.lat
+        }&lon=${this.state.markerSource.lng}`
+      );
       this.setState({
-        markerDestination: distmarker.leafletElement.getLatLng()
+        markerDestination: distmarker.leafletElement.getLatLng(),
+        distinations: [
+          resDist.data.address.city + ' , ' + resDist.data.address.road
+        ]
       });
     }
   };
@@ -208,7 +226,11 @@ class User extends Component {
           const { dispatch } = value;
           return (
             <React.Fragment>
-              <TopBar />
+              <TopBar
+                sourceAddress={this.state.sourceAddress}
+                placesfixed={this.state.placesfixed}
+                distinations={this.state.distinations}
+              />
               <Map center={position} zoom={this.state.zoom}>
                 <TileLayer url="http://185.252.28.133/hot/{z}/{x}/{y}.png" />
                 <Marker

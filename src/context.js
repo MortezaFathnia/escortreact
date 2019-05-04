@@ -24,11 +24,16 @@ const reducer = (state, action) => {
       return {
         destinations: action.payload.dist,
         timeTrip: action.payload.predictTime,
-        predictDist: action.payload.predictDist
+        predictDist: action.payload.predictDist,
+        report: action.payload.report
       };
-    case 'TRAVELREQUEST':
+    case 'IMMADIATETRAVEL':
       return {
-        proposalPrice: action.payload.addedCost,
+        proposalPrice: action.payload.addedCost
+      };
+    case 'CHANGETYPE':
+      console.log(action.payload.report);
+      return {
         report: action.payload.report
       };
     default:
@@ -48,7 +53,6 @@ export class Provider extends Component {
     tripRequestId: '',
     proposalPrice: '',
     report: '',
-    price: '',
     destinations: [
       {
         Lng: '',
